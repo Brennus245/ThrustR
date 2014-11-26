@@ -1,0 +1,111 @@
+/*
+GameFrame.java
+forms the displayable window for the game.
+*/
+
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
+
+public class GameFrame extends JFrame
+	implements ActionListener, KeyListener
+{
+	private JButton button1;
+	private JButton button2;
+	private JButton button3;
+	private GamePanel myGamePanel;
+	private Timer frameTimer;
+	
+	public void keyTyped(KeyEvent e) 
+	{ 
+	}
+
+	public void keyPressed(KeyEvent e) 
+	{ 
+		int keyCode = e.getKeyCode();
+		if (keyCode >= 256) return;
+		myGamePanel.keyPressed[keyCode] = true;
+		if (keyCode == KeyEvent.VK_SPACE)
+		{
+			myGamePanel.shootDot();
+		}
+		else if (keyCode == KeyEvent.VK_ESCAPE || 
+				 keyCode == KeyEvent.VK_Q)
+		{
+			System.exit(0);
+		}
+	}
+
+	public void keyReleased(KeyEvent e) 
+	{ 
+		int keyCode = e.getKeyCode();
+		if (keyCode >= 256) return;
+		myGamePanel.keyPressed[keyCode] = false;
+	}
+
+	public GameFrame(String title)
+	{
+		super(title);
+		this.addKeyListener(this);
+
+		frameTimer = new Timer(32, this);
+		frameTimer.start();
+
+		Container contentPane = this.getContentPane();
+		contentPane.setLayout(new BorderLayout());
+
+		JPanel buttonPanel = new JPanel();
+		buttonPanel.setLayout(new GridLayout(1, 3));
+		contentPane.add(buttonPanel, BorderLayout.NORTH);
+		
+		button1 = new JButton("button1");
+		button1.addActionListener(this);
+		button1.addKeyListener(this);
+		buttonPanel.add(button1);
+
+		button2 = new JButton("button2");
+		button2.addActionListener(this);
+		button2.addKeyListener(this);
+		buttonPanel.add(button2);
+
+		button3 = new JButton("Reset");
+		button3.addActionListener(this);
+		button3.addKeyListener(this);
+		buttonPanel.add(button3);
+
+		myGamePanel = new GamePanel();
+		myGamePanel.addKeyListener(this);
+		contentPane.add(myGamePanel, BorderLayout.CENTER);
+	}
+
+	public void actionPerformed(ActionEvent e)
+	{
+		if (e.getSource() == button1)
+		{
+			//System.out.println("button1");
+		}
+		else if (e.getSource() == button2)
+		{
+			//System.out.println("button2");
+		}
+		else if (e.getSource() == button3)
+		{
+			//System.out.println("button3");
+			myGamePanel.reset();
+		}
+		else if (e.getSource() == frameTimer)
+		{
+			//System.out.println("timer");
+			if (myGamePanel != null) myGamePanel.updateStuff();
+		}
+		repaint();
+	}
+
+	public static void main(String[] args)
+	{
+		GameFrame myGame = new GameFrame("My Game ");
+		myGame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		myGame.setSize(800,600);
+		myGame.setVisible(true);
+	}
+}
