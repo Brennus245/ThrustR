@@ -1,0 +1,122 @@
+/*
+GamePanel.java
+The main view and logic of the game
+*/
+
+import java.io.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.awt.image.*;
+import javax.swing.*;
+import javax.imageio.*;
+import java.util.*;
+
+public class GamePanel extends JPanel
+{
+	public static boolean[] keyPressed = new boolean[256];
+	int frameNum = 0;
+
+	Sprite theShip;
+	ArrayList<Sprite> shots;
+
+	public GamePanel()
+	{
+		theShip = new Sprite();
+		shots = new ArrayList<Sprite>();
+
+		try 
+		{
+			BufferedImage frame = ImageIO.read(new File("ship1.png"));
+			theShip.addImage(frame);
+			frame = ImageIO.read(new File("ship2.png"));
+			theShip.addImage(frame);
+		}
+		catch (IOException ex) 
+		{
+			ex.printStackTrace();
+		}
+	}
+
+	public void reset()
+	{
+		shots.clear();
+	}
+
+	public void shootDot()
+	{
+		Sprite shot = new Sprite();
+		int x = (int)(theShip.getX() + theShip.getWidth()/2 - 2);
+		int y = (int)(theShip.getY());
+
+		shot.setLocation(x,y);	
+		shot.setVelocity(0,-10);
+		shots.add(shot);
+	}
+
+	public void updateStuff()
+	{
+		int imageWidth = getWidth();
+		int imageHeight = getHeight();
+		
+		if (keyPressed[KeyEvent.VK_UP]) 
+		{
+			theShip.moveShip(0, -10);
+			theShip.gravity((double)imageHeight);
+		}
+		if (keyPressed[KeyEvent.VK_DOWN]) 
+		{
+			theShip.moveShip(0, 10);
+			theShip.gravity((double)imageHeight);
+		}
+		if (keyPressed[KeyEvent.VK_LEFT]) 
+		{
+			theShip.moveShip(-10, 0);
+			theShip.gravity((double)imageHeight);
+		}
+		if (keyPressed[KeyEvent.VK_RIGHT]) 
+		{
+			theShip.moveShip(10, 0);
+			theShip.gravity((double)imageHeight);
+		}
+
+		theShip.updateStuff(imageWidth, imageHeight);
+
+		for (int i=0; i<shots.size(); i++)
+		{
+			shots.get(i).updateStuff(imageWidth,  imageHeight);
+		}
+		
+		frameNum++;
+	}
+	
+	public void paintComponent(Graphics g)
+	{
+		super.paintComponent(g);
+
+		int w = getWidth();
+		int h = getHeight();
+
+		theShip.paintSprite(g, frameNum);
+		
+		if(frameNum%20 ==0)
+		{
+			theShip.paintCanvas(g, w, h);
+		}	
+		
+		if(keyPressed[KeyEvent.VK_UP]) {theShip.paintSprite(g);}
+
+		for (int i = 0; i<shots.size(); i++)
+		{
+			shots.get(i).paintSprite(g, frameNum);
+		}
+
+	}
+	public void paintCanvas(Graphics g)
+	{
+
+		int w = getWidth();
+		int h = getHeight();
+		
+		theShip.paintCanvas(g, w, h);
+	}	
+}
