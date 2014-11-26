@@ -1,0 +1,106 @@
+// Brandon Wong
+// Section: 05
+// Program 9
+
+/*
+Sprite.java
+Encapsulates an on-screen object that can display 
+a set of frames in sequence.
+*/
+
+import java.io.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.awt.image.*;
+import javax.swing.*;
+import javax.imageio.*;
+import java.util.*;
+
+public class Sprite
+{
+	private ArrayList<BufferedImage> frames;
+	private double x, y, vx, vy;
+	private int animationRate = 5;
+
+	void addImage(BufferedImage image) { frames.add(image); }
+	void setLocation(double xx, double yy) { x=xx; y=yy; }
+	void setVelocity(double vvx, double vvy) { vx=vvx; vy=vvy; }
+	void moveShip(double xxx, double yyy) { x+=xxx; y+=yyy;}
+	void gravity(double a){ 
+						if(y >= 515.0) vy=0; 
+						else vy = 5;
+				   		}
+	void setAnimationRate(int r) { animationRate = r; }
+
+	public double getX() { return x; }
+	public double getY() { return y; }
+	public double getWidth() {
+		if (frames.size() > 0) return frames.get(0).getWidth();
+		else return 5;
+	}
+	public double getHeight() {
+		if (frames.size() > 0) return frames.get(0).getHeight();
+		else return 5;
+	}	
+
+	public Sprite()
+	{
+		frames = new ArrayList<BufferedImage>();
+	}
+	
+	public void updateStuff(int w, int h)
+	{
+		x += vx;
+		y += vy;
+
+		checkCollision(w, h);
+	
+	}
+	public void checkCollision(int w, int h)
+	{
+		int frameWidth = 5;
+		int frameHeight = 5;
+
+		if (frames.size() > 0)
+		{
+			frameWidth = frames.get(0).getWidth();
+			frameHeight = frames.get(0).getHeight();
+		}
+		
+		if (x < -frameWidth/2) x += w;
+		else if (x > w-frameWidth/2) x -= w;
+	
+		if (y < -frameHeight/2) y += h;
+		else if (y > h-frameHeight/2) {y = h-frameHeight; vy = 0; }
+	}	
+	 
+	  public void paintSprite(Graphics g, int frameNum)
+	{
+		if (frames.size() > 0) 
+		{
+			int fnum = (frameNum/animationRate) % frames.size();
+			g.drawImage( frames.get(0), (int)x, (int)y, null);
+		}		
+		else
+		{
+			g.fillOval((int)x, (int)y, 5, 5);
+		}
+	} 
+	
+	public void paintSprite(Graphics g)
+	{
+		g.drawImage(frames.get(1), (int)x, (int)y, null);
+	}	
+	public void paintCanvas(Graphics g, double width, double height)
+	{
+		
+		double topRectangle;
+		double bottom = (Math.random()*((height/2)-50))+50;
+		double space = 0.3*height;
+		double bottomRectangle;
+		
+		g.setColor(Color.GREEN);
+		g.fillRect((int)width-50, (int)1, 50, (int)bottom);
+		g.fillRect((int)width-50, (int)bottom+(int)space, 50, (int)height);
+	}	
+}
